@@ -1,0 +1,27 @@
+{
+  "name": "barws",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adriangiulianotucci/BARWS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adriangiulianotucci/BARWS/issues"
+  },
+  "homepage": "https://github.com/adriangiulianotucci/BARWS#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "lowdb": "^1.0.0",
+    "nodemon": "^2.0.4",
+    "path": "^0.12.7",
+    "socket.io": "^2.3.0"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "orders": [
+    {
+      "id": 1,
+      "title": "Hamburger",
+      "local": 12,
+      "status": "free"
+    }
+  ],
+  "locals": [
+    {
+      "id": 12,
+      "name": "La cantina"
+    }
+  ]
+}
