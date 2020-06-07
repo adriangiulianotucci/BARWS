@@ -1,8 +1,16 @@
-//DOM elements
 const socket = io("localhost:3000");
-const roomOk = document.getElementById('roomOk')
-const roomId = document.getElementById('roomId')
-const stateArea = document.getElementById('state')
+
+const client = {
+    //DOM elements
+    roomOk : document.getElementById('roomOk'),
+    roomId : document.getElementById('roomId'),
+    stateArea : document.getElementById('state'),
+
+    changeOrderState : function(value) {
+        this.stateArea.value = value
+    }
+}
+
 
 //Session data
 let session = {}
@@ -15,11 +23,11 @@ let session = {}
 
 
 //Inicio una conexion de WS para escuchar el estado de ese pedido
-roomOk.addEventListener('click', async function () {
+client.roomOk.addEventListener('click', async function () {
 
 let order = {}
 //OBTIENE LA ORDER FREE
-fetch(`http://localhost:3000/${roomId.value}`)
+fetch(`http://localhost:3000/${client.roomId.value}`)
   .then(function(response) {
     return response.json();
   })
@@ -35,16 +43,19 @@ fetch(`http://localhost:3000/${roomId.value}`)
   })
   .then(function(){
       //ESCUCHA LA ORDER
-      socket.emit('join',`ROOMNUMBER${order.id}`)
+      socket.emit('join',`order${order.id}&local${order.local}`)
       socket.on('roomCreation', (msg) => {
-          stateArea.value=msg
-      })
+          if(msg === 'PREPARANDO') {
+              client.changeOrderState('FUNCION QUE ESTILA EL PREPARANDO')
+          }
+        })
       socket.on('orderStatus', (msg) => {
-        stateArea.value=msg
-      })
+          if(msg === 'READY') {
+              client.changeOrderState('FUNCION QUE ESTILA EL READY')
+          }
+        })
   })
 
 })
 
 //Funciones que alteran el estado
-

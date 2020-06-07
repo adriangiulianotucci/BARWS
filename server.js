@@ -5,14 +5,17 @@ const io = require('socket.io')(http);
 const path = require('path')
 const database = require('./db/db')
 const cors = require('cors')
+const bodyParser = require('body-parser')
 
 //resources
 const getRoom = require('./resources/resources')
 
-//routes
 app.use(express.static('public'));
-
 app.use(cors())
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+//routes
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/public/client.html'));
@@ -20,7 +23,13 @@ app.get('/', (req, res) => {
 
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname + '/public/admin.html'));
-  });
+});
+
+app.post('/finish' , (req, res) => {
+    webSocket.finishOrder(req.body.idLocal,req.body.idOrder)
+    //emite estado finalizado
+    res.status(200).send('ORDEN FINALIZADA')
+})
 
 app.get('/:id', (req, res) => {
     let id = parseInt(req.params.id)
@@ -32,21 +41,27 @@ app.post('/:orderId', (req, res) => {
     res.status(200).send(database.takeOrder(orderId))
 })
 
+
 //websocket
 
 io.on('connection', (socket) => {
-    console.log('client connected')
     socket.on('join', (msg) => {
-        socket.join(msg)
-        socket.emit('roomCreation', 'PREPARANDO')
-    })
-    socket.on('orderStatus', (msg) => {
-        console.log(getRoom(socket))
-        setTimeout(() => {
-            io.to(getRoom(socket)).emit('orderStatus', msg)
-        }, 2000);
+        webSocket.createRoom(socket, msg)
     })
 });
+
+//webSocket object
+
+const webSocket = {
+    createRoom : function(socket , msg) {
+            socket.join(msg)
+            //emite stado de preparando
+            socket.emit('roomCreation', 'PREPARANDO')
+    },
+    finishOrder: function(idLocal,idOrder) {
+        io.to(`order${idOrder}&local${idLocal}`).emit('orderStatus', 'READY')
+    }
+}
 
 
 http.listen(3000, () => {
